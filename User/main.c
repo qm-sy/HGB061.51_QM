@@ -9,10 +9,13 @@
 #include "screen.h"
 #include "stdint.h"
 #include "pwm.h"
+#include "key.h"
+#include "eeprom.h"
 
-unsigned char temp_num = 0;
 void main()
 {
+    uint16_t addr = 0x0200;
+    uint8_t i;
     P_SW2 |= 0x80;
     
     GPIOInit();
@@ -29,31 +32,22 @@ void main()
     PWMStart();
     
     lcd_init();
-    wind_dis(6);
-    num_dis(123);
-    channel_dis(6);
-    sun_dis(DIS_ON);
-    sync_dis(DIS_ON);
-    alarm_dis(DIS_ON);
-    F_dis(DIS_ON);
-    M_dis(DIS_ON);
-    R_dis(DIS_ON);
-    Celsius_dis(DIS_ON);
-    mode_dis(DIS_ON);
-    percentage_dis(DIS_ON);
-    cur_dis(DIS_ON);
-    set_dis(DIS_ON);
-    fan_center_dis(DIS_ON);
-     PWMSet(20);
-    printf("========code start========\r\n");
+    ISP_data_init();
+    PWMSet(2000);
 
+    printf("========code start========\r\n");
+    for(i=0;i<10;i++)
+    {
+      printf("the value of addr %d \r\n",(int)addr);  
+      addr++;
+    }
+    
     while(1)
     {
-
-        fan_leaf1_dis(fan_dis_bit);
-        fan_leaf2_dis(~fan_dis_bit);
-
-        
+        button_scan();
+//        fan_leaf1_dis(fan_dis_bit);
+//        fan_leaf2_dis(~fan_dis_bit);
+ 
     }
 
 }

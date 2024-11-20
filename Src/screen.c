@@ -12,7 +12,7 @@ uint8_t value_0B = 0;
 uint8_t value_0E = 0;
 uint8_t value_0F = 0; 
  
-uint8_t addr_tab[7] = { 0xc3,0xc6,0xc7,0xca,0xcb,0xce, 0xcf};
+uint8_t addr_tab[7] = { 0xc3,0xc6,0xc7,0xca,0xcb,0xce,0xcf};
 
 uint8_t num_tab[10] = {0xF5,0x05,0xD3,0x97,0x27,0xB6,0xF6,0x15,0xF7,0xB7};
                      /*  0    1    2    3    4    5    6    7    8    9  */
@@ -106,7 +106,9 @@ void num_dis(uint8_t num)
     
     lcd_write_val(addr_tab[ADDR_07],value_07);
 
-    lcd_write_val(addr_tab[ADDR_06],value_06);
+    lcd_write_val(addr_tab[ADDR_06],value_06); 
+
+
 }
 
 void wind_dis(uint8_t num)
@@ -152,36 +154,44 @@ void wind_dis(uint8_t num)
 
 void channel_dis(uint8_t num)
 {
-    value_0E &= 0xf8;
+    value_0E &= 0x08;
+    value_0B &= 0x0f;
     
     switch(num)
     {
-        case 0:
-            value_0E |= 0x01;
-            break;
-        
         case 1:
-            value_0E |= 0x02;
+            value_0E |= 0x04;
+            value_0B |= 0x40;
             break;
         
         case 2:
-            value_0E |= 0x03;
+            value_0E |= 0x02;
+            value_0B |= 0x20;
             break;
         
         case 3:
-            value_0E |= 0x04;
+            value_0E |= 0x01;
+            value_0B |= 0x10;
             break;
         
         case 4:
-            value_0E |= 0x05;
+            value_0E |= 0x06;
+            value_0B |= 0x60;
             break;
         
         case 5:
-            value_0E |= 0x06;
+            value_0E |= 0x03;
+            value_0B |= 0x30;
             break;
         
         case 6:
+            value_0E |= 0x05;
+            value_0B |= 0x50;
+            break;
+        
+        case 7:
             value_0E |= 0x07;
+            value_0B |= 0x70;
             break;
         
         default:
@@ -189,6 +199,7 @@ void channel_dis(uint8_t num)
     }
     
     lcd_write_val(addr_tab[ADDR_0E],value_0E);
+    lcd_write_val(addr_tab[ADDR_0B],value_0B);
 }
 
 void sun_dis(bit on_off)

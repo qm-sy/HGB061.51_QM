@@ -3,7 +3,6 @@
 
 void PWM5Init(void)
 {
-    P_SW2 |= 0x80;              //扩展SFR访问控制使能
     PWMCFG = 0x08;              //配置PWM5的输出初始电平为高电平
     PWMCKS = 0x0b;              //选择PWM的时钟为Fosc/12
     
@@ -12,9 +11,7 @@ void PWM5Init(void)
     PWM5T1 = 0;                 //设置PWM5第1次反转的PWM计数
     PWM5T2 = 10;                //设置PWM5第2次反转的PWM计数 占空比为(PWM5T2-PWM5T1)/PWMC
                          
-    PWM5CR = 0x00;              //选择PWM5输出到P2.3,不使能PWM5中断
-    
-    PWMFDCR=0x30;               //打开PWM外部异常功能并发生PWM外部异常时，PWM的输出口立即被设置为高阻输入模式
+    PWM5CR = 0x00;              //选择PWM5输出到P2.3,不使能PWM5中断          
 }
 
 void PWMSet(unsigned int dat)
@@ -30,4 +27,39 @@ void PWMStart(void)
 void PWMStop(void)
 {
     PWMCR = 0X00;
+}
+
+void wind_crl(unsigned char wind_num)
+{
+    switch(wind_num)
+    {
+        case 0:
+            PWMStop();
+            break;
+        
+        case 1:
+            PWMSet(2000);
+            break;
+        
+        case 2:
+            PWMSet(2400);
+            break;
+        
+        case 3:
+            PWMSet(2800);
+            break;
+        
+        case 4:
+            PWMSet(3200);
+            break;
+        
+        case 5:
+            PWMSet(3600);
+            break;
+        
+        case 6:
+            PWMSet(4000);
+            break;
+    }
+
 }
