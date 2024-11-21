@@ -1,5 +1,6 @@
 #include "STC15W4Kxx.h"
 #include "pwm.h"
+#include "timer.h"
 
 void PWM5Init(void)
 {
@@ -16,6 +17,7 @@ void PWM5Init(void)
 
 void PWMSet(unsigned int dat)
 {
+    PWMStart();
     PWM5T2 = dat;
 }
 
@@ -31,35 +33,39 @@ void PWMStop(void)
 
 void wind_crl(unsigned char wind_num)
 {
-    switch(wind_num)
+    if(wind_bit == 1)       
     {
-        case 0:
-            PWMStop();
-            break;
+        switch(wind_num)
+        {
+            case 0:
+                PWMStop();
+                break;
+            
+            case 1:
+                PWMSet(2000);
+                break;
+            
+            case 2:
+                PWMSet(1600);
+                break;
+            
+            case 3:
+                PWMSet(1200);
+                break;
+            
+            case 4:
+                PWMSet(800);
+                break;
+            
+            case 5:
+                PWMSet(500);
+                break;
+            
+            case 6:
+                PWMSet(10);
+                break;
+        }
         
-        case 1:
-            PWMSet(2000);
-            break;
-        
-        case 2:
-            PWMSet(2400);
-            break;
-        
-        case 3:
-            PWMSet(2800);
-            break;
-        
-        case 4:
-            PWMSet(3200);
-            break;
-        
-        case 5:
-            PWMSet(3600);
-            break;
-        
-        case 6:
-            PWMSet(4000);
-            break;
     }
-
+    
 }

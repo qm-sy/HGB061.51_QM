@@ -441,6 +441,11 @@
               <FileType>1</FileType>
               <FilePath>.\Src\key.c</FilePath>
             </File>
+            <File>
+              <FileName>sync.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\Src\sync.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

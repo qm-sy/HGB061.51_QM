@@ -30,7 +30,7 @@ uint16_t Get_ADC12bitResult(uint8_t channel_x)
 {
     uint16_t adc_value = 0;
 
-    ADC_CONTR |= ADC_POWER | ADC_SPEED0 | ADC_START | channel_x ; // 启动ADC转换
+    ADC_CONTR |= ADC_POWER | ADC_SPEED0 | ADC_START | (channel_x-1) ; // 启动ADC转换
     while (!(ADC_CONTR & ADC_FLAG));  // 等待ADC转换完成
     ADC_CONTR &= ~ADC_FLAG; 
     

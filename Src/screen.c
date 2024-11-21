@@ -16,12 +16,6 @@ uint8_t addr_tab[7] = { 0xc3,0xc6,0xc7,0xca,0xcb,0xce,0xcf};
 
 uint8_t num_tab[10] = {0xF5,0x05,0xD3,0x97,0x27,0xB6,0xF6,0x15,0xF7,0xB7};
                      /*  0    1    2    3    4    5    6    7    8    9  */
-//unsigned char code Tab[]={
-//0xF5,0x05,0xD3,0x97,0x27,0xB6,0xF6,0x15,
-//0xF7,0xB7,0x77,0xE6,0xF0,0xC7,0xF2,0x72,	 //0~F 代码
-//0x00, //不显示
-//0x02,//显示-
-//};
 
 void lcd_init()
 {
@@ -90,10 +84,10 @@ void num_dis(uint8_t num)
     uint8_t tens = (num / 10) % 10;  // 获取十位数
     uint8_t ones = num % 10;  // 获取个位数
     
-    value_0B &= 0x70;
+    value_0B &= 0x00;
     value_0A &= 0X00;
     value_07 &= 0X00;
-    value_06 &= 0X08;
+    value_06 &= 0X00;
     
     value_0B |= (num_tab[hundreds]>>4);
     value_0A |= num_tab[hundreds];
@@ -154,7 +148,7 @@ void wind_dis(uint8_t num)
 
 void channel_dis(uint8_t num)
 {
-    value_0E &= 0x08;
+    value_0E &= 0x80;
     value_0B &= 0x0f;
     
     switch(num)
@@ -232,35 +226,35 @@ void alarm_dis(bit on_off)
     lcd_write_val(addr_tab[ADDR_03],value_03);
 }
 
-void F_dis(bit on_off)
-{
-    value_0E &= 0x7f;
-    if(on_off==DIS_ON)
-    {
-        value_0E |= 0x80;   
-    }
-    lcd_write_val(addr_tab[ADDR_0E],value_0E);
-}
+//void F_dis(bit on_off)
+//{
+//    value_0E &= 0x7f;
+//    if(on_off==DIS_ON)
+//    {
+//        value_0E |= 0x80;   
+//    }
+//    lcd_write_val(addr_tab[ADDR_0E],value_0E);
+//}
 
-void M_dis(bit on_off)
-{
-    value_0E &= 0xbf;
-    if(on_off==DIS_ON)
-    {
-        value_0E |= 0x40;   
-    }
-    lcd_write_val(addr_tab[ADDR_0E],value_0E);
-}
+//void M_dis(bit on_off)
+//{
+//    value_0E &= 0xbf;
+//    if(on_off==DIS_ON)
+//    {
+//        value_0E |= 0x40;   
+//    }
+//    lcd_write_val(addr_tab[ADDR_0E],value_0E);
+//}
 
-void R_dis(bit on_off)
-{
-    value_0E &= 0xdf;
-    if(on_off==DIS_ON)
-    {
-        value_0E |= 0x20;   
-    }
-    lcd_write_val(addr_tab[ADDR_0E],value_0E);
-}
+//void R_dis(bit on_off)
+//{
+//    value_0E &= 0xdf;
+//    if(on_off==DIS_ON)
+//    {
+//        value_0E |= 0x20;   
+//    }
+//    lcd_write_val(addr_tab[ADDR_0E],value_0E);
+//}
 
 void Celsius_dis(bit on_off)
 {
@@ -292,25 +286,25 @@ void percentage_dis(bit on_off)
     lcd_write_val(addr_tab[ADDR_06],value_06);
 }
 
-void cur_dis(bit on_off)
-{
-    value_03 &= 0xf7;
-    if(on_off==DIS_ON)
-    {
-        value_03 |= 0x08;   
-    }
-    lcd_write_val(addr_tab[ADDR_03],value_03);
-}
+//void cur_dis(bit on_off)
+//{
+//    value_03 &= 0xf7;
+//    if(on_off==DIS_ON)
+//    {
+//        value_03 |= 0x08;   
+//    }
+//    lcd_write_val(addr_tab[ADDR_03],value_03);
+//}
 
-void set_dis(bit on_off)
-{
-    value_03 &= 0xfb;
-    if(on_off==DIS_ON)
-    {
-        value_03 |= 0x04;   
-    }
-    lcd_write_val(addr_tab[ADDR_03],value_03);
-}
+//void set_dis(bit on_off)
+//{
+//    value_03 &= 0xfb;
+//    if(on_off==DIS_ON)
+//    {
+//        value_03 |= 0x04;   
+//    }
+//    lcd_write_val(addr_tab[ADDR_03],value_03);
+//}
 
 void fan_center_dis(bit on_off)
 {

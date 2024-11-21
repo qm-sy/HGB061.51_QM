@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   KEY                                                               11/20/2024 17:46:01 PAGE 1   
+C51 COMPILER V9.60.7.0   KEY                                                               11/21/2024 16:46:46 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE KEY
@@ -17,203 +17,390 @@ line level    source
    7          #include "delay.h"
    8          #include "eeprom.h"
    9          #include "stdio.h"
-  10          
-  11          uint8_t wind_num = 0;
-  12          uint8_t power_num = 0;
-  13          uint8_t mode_num = 0;
-  14          uint8_t sync_flag = 0;
-  15          
-  16          void button_scan()
-  17          {
-  18   1          uint8_t key_val = (P0&0X0f);
-  19   1          if(scan_start_bit == 1)
-  20   1          {
-  21   2              switch(key_val)
-  22   2              {
-  23   3                  case PowerKey:
-  24   3                      power_key();
-  25   3                      break;
-  26   3                  
-  27   3                  case UpKey:
-  28   3                      up_key();
-  29   3                      delay_ms(50);
-  30   3                      break;
-  31   3                  
-  32   3                  case ChannelChoose:
-  33   3                      channel_choose();
-  34   3                      delay_ms(50);
-  35   3                      break;
-  36   3      //            case FunctionKey:
-  37   3                  
-  38   3                  case ModeChoose:
-  39   3                      mode_choose();
-  40   3                      delay_ms(50);
-  41   3                      break;
-  42   3                      
-  43   3                  case DownKey:
-  44   3                      down_key();
-  45   3                      delay_ms(50);
-  46   3                      break;
-  47   3                  
-  48   3                  case FanUp:
-  49   3                      fan_up();   
-  50   3                      delay_ms(50); 
-  51   3                      break;
-  52   3                  
-  53   3                  case FanDown:
-  54   3                      fan_down();          
-C51 COMPILER V9.60.7.0   KEY                                                               11/20/2024 17:46:01 PAGE 2   
+  10          #include "sync.h"
+  11          
+  12          bit on_off = 1;
+  13          
+  14          bit sync_bit = 0;
+  15          uint8_t wind_num = 0;
+  16          uint8_t power_num = 0;
+  17          uint8_t mode_num = 0;
+  18          uint8_t temp_num = 80;
+  19          
+  20          uint8_t key_val = 0;
+  21          
+  22          uint8_t mode_info[5];
+  23          
+  24          bit sync_delay_bit = 0;
+  25          bit temp_delay_bit = 0;
+  26          
+  27          
+  28          void button_scan()
+  29          {
+  30   1          uint8_t continue_cnt1;
+  31   1          uint8_t continue_cnt2;
+  32   1          if(scan_start_bit == 1)
+  33   1          {
+  34   2              switch(key_val)
+  35   2              {
+  36   3      //            case PowerKey:
+  37   3      //                power_key();
+  38   3      //                break;
+  39   3                  
+  40   3                  case UpKey:
+  41   3                      up_key();
+  42   3                      delay_ms(50);
+  43   3                      break;
+  44   3                  
+  45   3                  case ChannelChoose:
+  46   3                      continue_cnt1 = 100;
+  47   3                      while((key_val==ChannelChoose)&&(continue_cnt1>0))
+  48   3                      {
+  49   4                          continue_cnt1--; 
+  50   4                          delay_ms(10);
+  51   4                      }
+  52   3                      if(continue_cnt1 == 0)           //长按1s判断，开启同步 
+  53   3                      {
+  54   4                          temp_set();
+C51 COMPILER V9.60.7.0   KEY                                                               11/21/2024 16:46:46 PAGE 2   
 
-  55   3                      delay_ms(50);
-  56   3                      break;
-  57   3      
-  58   3              }
-  59   2              scan_stop_bit = 1;
-  60   2              scan_start_bit = 0;
-  61   2          }
-  62   1      }
-  63          
-  64          void fan_up()
-  65          {
-  66   1          buzzer=buzzer_bit=0;
-  67   1          wind_num += 1;
-  68   1          if(wind_num>6)
-  69   1          {
-  70   2              wind_num = 6;
-  71   2          }
-  72   1          wind_crl(wind_num);
-  73   1          wind_dis(wind_num);
-  74   1          
-  75   1          eeprom_data_write();
-  76   1      }
-  77          
-  78          void fan_down()
-  79          {
-  80   1          buzzer=buzzer_bit=0;
-  81   1          wind_num -= 1;
-  82   1          if(wind_num<0)
-  83   1          {
-  84   2              wind_num = 0;
-  85   2          }
-  86   1          wind_crl(wind_num);
-  87   1          wind_dis(wind_num);
-  88   1          
-  89   1          eeprom_data_write();
-  90   1      }
-  91          
-  92          void up_key()
-  93          {
-  94   1          char up_num = 0;
-  95   1      //    uint8_t dat;
-  96   1          up_num = power_num;
-  97   1          buzzer=buzzer_bit=0;
-  98   1          up_num += 5;
-  99   1          if(up_num>100)
- 100   1          {
- 101   2              up_num = 100;
- 102   2          }
- 103   1          power_num = up_num;
- 104   1          power_crl(power_num);
- 105   1          num_dis(power_num);
- 106   1          
- 107   1          eeprom_data_write();
- 108   1          printf("THE value of mode_info[0] is %d \r\n",(int)mode_info[0]);
- 109   1          printf("THE value of mode_info[2] is %d \r\n",(int)mode_info[2]);
- 110   1          printf("THE value of mode_info[3] is %d \r\n",(int)mode_info[3]);
+  55   4                      }
+  56   3      
+  57   3                      if(temp_delay_bit == 0)         //短按，mode切换
+  58   3                      {
+  59   4                          channel_choose();
+  60   4                      }
+  61   3                      delay_ms(50);
+  62   3                      break;
+  63   3      //            case FunctionKey:
+  64   3                  
+  65   3                  case ModeChoose:                    //复用同步切换、mode切换
+  66   3                      continue_cnt2 = 100;
+  67   3                      while((key_val==ModeChoose)&&(continue_cnt2>0))
+  68   3                      {
+  69   4                          continue_cnt2--; 
+  70   4                          delay_ms(10);
+  71   4                      }
+  72   3                      
+  73   3                      if(continue_cnt2 == 0)           //长按1s判断，开启同步 
+  74   3                      {
+  75   4                          sync_choose();
+  76   4                      }
+  77   3      
+  78   3                      if(sync_delay_bit == 0)         //短按，mode切换
+  79   3                      {
+  80   4                          mode_choose();
+  81   4                      }
+  82   3                      
+  83   3                      delay_ms(50);
+  84   3                      break;
+  85   3                      
+  86   3                  case DownKey:
+  87   3                      down_key();
+  88   3                      delay_ms(50);
+  89   3                      break;
+  90   3                  
+  91   3                  case FanUp:
+  92   3                      fan_up();   
+  93   3                      delay_ms(50); 
+  94   3                      break;
+  95   3                  
+  96   3                  case FanDown:
+  97   3                      fan_down();          
+  98   3                      delay_ms(50);
+  99   3                      break;
+ 100   3      
+ 101   3              }
+ 102   2              scan_stop_bit = 1;
+ 103   2              scan_start_bit = 0;
+ 104   2          }
+ 105   1      }
+ 106          
+ 107          void fan_up()
+ 108          {
+ 109   1          char up_num1 = 0;
+ 110   1          up_num1 = wind_num;
  111   1          
- 112   1      //    dat = ISP_read(0x0200);
- 113   1      //    printf("THE value of mode_info[0] is %d \r\n",(int)dat);
- 114   1      //    
- 115   1          
- 116   1      }
-C51 COMPILER V9.60.7.0   KEY                                                               11/20/2024 17:46:01 PAGE 3   
+ 112   1          buzzer=buzzer_bit=0;
+ 113   1          
+ 114   1          up_num1 += 1;
+ 115   1          if(up_num1>6)
+ 116   1          {
+C51 COMPILER V9.60.7.0   KEY                                                               11/21/2024 16:46:46 PAGE 3   
 
- 117          
- 118          void down_key()
- 119          {
- 120   1          char down_num = 0;
- 121   1          down_num = power_num;
- 122   1          buzzer=buzzer_bit=0;
- 123   1          down_num -= 5;
- 124   1          if(down_num<0)
- 125   1          {
- 126   2              down_num = 0;
- 127   2          }
- 128   1          power_num = down_num;
- 129   1          power_crl(power_num);
- 130   1          num_dis(power_num);
+ 117   2              up_num1 = 6;
+ 118   2          }
+ 119   1          
+ 120   1          wind_num = up_num1;
+ 121   1          wind_crl(wind_num);
+ 122   1          wind_dis(wind_num);
+ 123   1          
+ 124   1          eeprom_data_write();
+ 125   1      }
+ 126          
+ 127          void fan_down()
+ 128          {
+ 129   1          char down_num1 = 0;
+ 130   1          down_num1 = wind_num;
  131   1          
- 132   1          eeprom_data_write();
- 133   1      }
- 134          
- 135          void channel_choose()
- 136          {
- 137   1          buzzer=buzzer_bit=0;
- 138   1          
- 139   1          if(channel_num==7)
- 140   1          {
- 141   2              channel_num = 1;
- 142   2          }
- 143   1          else
- 144   1          {
- 145   2              channel_num += 1;
- 146   2          }
- 147   1          channel_dis(channel_num);
- 148   1          
- 149   1          eeprom_data_write();
- 150   1      }
- 151          
- 152          void mode_choose()
- 153          {
- 154   1          buzzer=buzzer_bit=0;
- 155   1          if(mode_num==5)
+ 132   1          buzzer=buzzer_bit=0;
+ 133   1          
+ 134   1          down_num1 -= 1;
+ 135   1          if(down_num1<0)
+ 136   1          {
+ 137   2              down_num1 = 0;
+ 138   2          }
+ 139   1      
+ 140   1          wind_num = down_num1;
+ 141   1          wind_crl(wind_num);
+ 142   1          wind_dis(wind_num);
+ 143   1          
+ 144   1          eeprom_data_write();
+ 145   1      }
+ 146          
+ 147          void up_key()
+ 148          {
+ 149   1          char up_num2 = 0;
+ 150   1          up_num2 = power_num;
+ 151   1          
+ 152   1          buzzer=buzzer_bit=0;
+ 153   1          
+ 154   1          up_num2 += 5;
+ 155   1          if(up_num2>100)
  156   1          {
- 157   2              mode_num = 1;
+ 157   2              up_num2 = 100;
  158   2          }
- 159   1          else
- 160   1          {
- 161   2              mode_num += 1;
- 162   2          }
- 163   1          
- 164   1          lcd_clear();
- 165   1          mode_dis(DIS_ON);
- 166   1          num_dis(mode_num);
- 167   1          percentage_dis(DIS_OFF);
- 168   1          
- 169   1          eeprom_data_read(mode_num);
- 170   1          
- 171   1          delay_ms(1000);
- 172   1          
- 173   1          mode_dis(DIS_OFF);
- 174   1          sun_dis(DIS_ON);
- 175   1          printf("THE value of mode_info[0] is %d \r\n",(int)mode_info[0]);
- 176   1          printf("THE value of mode_info[2] is %d \r\n",(int)mode_info[2]);
- 177   1          printf("THE value of mode_info[3] is %d \r\n",(int)mode_info[3]);
- 178   1          channel_dis(mode_info[0]);
-C51 COMPILER V9.60.7.0   KEY                                                               11/20/2024 17:46:01 PAGE 4   
+ 159   1          
+ 160   1          power_num = up_num2;
+ 161   1          power_crl(power_num);
+ 162   1          num_dis(power_num);
+ 163   1          channel_dis(channel_num);
+ 164   1          percentage_dis(DIS_ON);
+ 165   1          
+ 166   1          eeprom_data_write();
+ 167   1      }
+ 168          
+ 169          void down_key()
+ 170          {
+ 171   1          char down_num2 = 0;
+ 172   1          down_num2 = power_num;
+ 173   1          
+ 174   1          buzzer=buzzer_bit=0;
+ 175   1          
+ 176   1          down_num2 -= 5;
+ 177   1          if(down_num2<0)
+ 178   1          {
+C51 COMPILER V9.60.7.0   KEY                                                               11/21/2024 16:46:46 PAGE 4   
 
- 179   1          num_dis(mode_info[3]);
- 180   1          percentage_dis(DIS_ON);
- 181   1          wind_dis(mode_info[2]);
- 182   1          
- 183   1          eeprom_mode_save();
- 184   1       
- 185   1      }
- 186          
- 187          void power_key()
- 188          {
- 189   1         lcd_clear();
- 190   1      }
+ 179   2              down_num2 = 0;
+ 180   2          }
+ 181   1          
+ 182   1          power_num = down_num2;
+ 183   1          power_crl(power_num);
+ 184   1          num_dis(power_num);
+ 185   1          channel_dis(channel_num);
+ 186   1          percentage_dis(DIS_ON);
+ 187   1          
+ 188   1          eeprom_data_write();
+ 189   1      }
+ 190          
+ 191          void channel_choose()
+ 192          {
+ 193   1          buzzer=buzzer_bit=0;
+ 194   1          
+ 195   1          if(channel_num==7)
+ 196   1          {
+ 197   2              channel_num = 1;
+ 198   2          }
+ 199   1          else
+ 200   1          {
+ 201   2              channel_num += 1;
+ 202   2          }
+ 203   1          channel_dis(channel_num);
+ 204   1          
+ 205   1          eeprom_data_write();
+ 206   1      }
+ 207          
+ 208          void temp_set()
+ 209          {
+ 210   1          char num3 = 0;
+ 211   1          num3 = temp_num;
+ 212   1          
+ 213   1          buzzer=buzzer_bit=0;
+ 214   1          delay_ms(500);
+ 215   1          while(key_val!=ChannelChoose)
+ 216   1          {
+ 217   2              if(temp_dis_bit)
+ 218   2              {
+ 219   3                  num_dis(temp_num);
+ 220   3                  Celsius_dis(DIS_ON);
+ 221   3                  
+ 222   3              }
+ 223   2              if(~temp_dis_bit)
+ 224   2              {
+ 225   3                  lcd_write_val(addr_tab[ADDR_0B],0x00);
+ 226   3      
+ 227   3                  lcd_write_val(addr_tab[ADDR_0A],0X00);
+ 228   3      
+ 229   3                  lcd_write_val(addr_tab[ADDR_07],0X00);
+ 230   3      
+ 231   3                  lcd_write_val(addr_tab[ADDR_06],0X00);
+ 232   3                  
+ 233   3                  Celsius_dis(DIS_ON);
+ 234   3                  
+ 235   3              }
+ 236   2              if(key_val == UpKey)
+ 237   2              {
+ 238   3                  buzzer=buzzer_bit=0;
+ 239   3                  num3+=5;
+ 240   3                  if(num3>100)
+C51 COMPILER V9.60.7.0   KEY                                                               11/21/2024 16:46:46 PAGE 5   
+
+ 241   3                  {
+ 242   4                      num3 = 100;
+ 243   4                  }
+ 244   3                  temp_num = num3;
+ 245   3      
+ 246   3                  delay_ms(100);
+ 247   3              }
+ 248   2              if(key_val == DownKey)
+ 249   2              {
+ 250   3                  buzzer=buzzer_bit=0;
+ 251   3                  num3-=5;
+ 252   3                  if(num3<0)
+ 253   3                  {
+ 254   4                      num3 = 0;
+ 255   4                  }
+ 256   3                  temp_num = num3;
+ 257   3      
+ 258   3                  delay_ms(100);
+ 259   3              }
+ 260   2          }
+ 261   1          
+ 262   1          temp_delay_bit = 1;         //延时1s  防止长按、短按误触 
+ 263   1          
+ 264   1          num_dis(power_num);           
+ 265   1          channel_dis(channel_num);
+ 266   1          percentage_dis(DIS_ON);
+ 267   1          
+ 268   1          eeprom_data_write();
+ 269   1      }
+ 270          
+ 271          void mode_choose()
+ 272          {
+ 273   1          buzzer=buzzer_bit=0;
+ 274   1          mode_num += 1;
+ 275   1          if(mode_num==6)
+ 276   1          {
+ 277   2              mode_num = 1;
+ 278   2          }
+ 279   1          
+ 280   1          lcd_clear();                //一次清屏
+ 281   1          
+ 282   1          percentage_dis(DIS_OFF);
+ 283   1          mode_dis(DIS_ON);       
+ 284   1          num_dis(mode_num);           //显示模式序号和标志
+ 285   1            
+ 286   1          eeprom_data_read(mode_num);  //读取channel_num、sync_bit、wind_num、power_num
+ 287   1              
+ 288   1          delay_ms(500);
+ 289   1          
+ 290   1          lcd_clear();                 //二次清屏
+ 291   1          
+ 292   1          mode_dis(DIS_OFF);
+ 293   1          sun_dis(~sync_bit);
+ 294   1          sync_dis(sync_bit);
+ 295   1          num_dis(power_num);
+ 296   1          channel_dis(channel_num);
+ 297   1          percentage_dis(DIS_ON);
+ 298   1          wind_dis(wind_num);          //刷新界面：加热符号、通道、功率、百分比、风力、同步标志
+ 299   1          
+ 300   1          sync_judge();               //判断同步状态
+ 301   1      
+ 302   1          eeprom_mode_save();         //记录模式序号
+C51 COMPILER V9.60.7.0   KEY                                                               11/21/2024 16:46:46 PAGE 6   
+
+ 303   1      }
+ 304          
+ 305          void sync_choose()
+ 306          {
+ 307   1          buzzer=buzzer_bit=0;
+ 308   1      
+ 309   1          sync_delay_bit = 1;         //延时1s  防止长按、短按误触 
+ 310   1      
+ 311   1          sync_bit = ~sync_bit;       //同步开or关
+ 312   1          sync_dis(sync_bit);
+ 313   1      
+ 314   1          sync_judge();
+ 315   1      
+ 316   1          eeprom_data_write();        //记录同步状态
+ 317   1      }
+ 318          
+ 319          //void power_key()
+ 320          //{
+ 321          //   lcd_clear();
+ 322          //}
+ 323          
+ 324          void fan_rotate()
+ 325          {
+ 326   1          fan_center_dis(DIS_ON);
+ 327   1          if((wind_bit == 1)&&(wind_num>0))
+ 328   1          {
+ 329   2              fan_leaf1_dis(fan_dis_bit);
+ 330   2              fan_leaf2_dis(~fan_dis_bit);
+ 331   2          }
+ 332   1          else
+ 333   1          {
+ 334   2              fan_leaf1_dis(DIS_ON);
+ 335   2              fan_leaf2_dis(DIS_OFF);
+ 336   2          }
+ 337   1      }
+ 338          
+ 339          uint8_t power_on()
+ 340          {
+ 341   1          if(scan_start_bit == 1)
+ 342   1          {
+ 343   2              if(key_val == PowerKey)
+ 344   2              {
+ 345   3                  return 0;
+ 346   3              }
+ 347   2          }
+ 348   1          return 1;
+ 349   1      }
+ 350          
+ 351          void power_off()
+ 352          {
+ 353   1          uint8_t continue_cnt;
+ 354   1          if(scan_start_bit == 1)
+ 355   1          {
+ 356   2              continue_cnt = 100;
+ 357   2              while((key_val==PowerKey)&&(continue_cnt>0))
+ 358   2              {
+ 359   3                  continue_cnt--; 
+ 360   3                  delay_ms(10);
+ 361   3              }
+ 362   2              if(continue_cnt == 0)           //长按1s判断，开启同步 
+ 363   2              {
+ 364   3                  on_off = 1;
+C51 COMPILER V9.60.7.0   KEY                                                               11/21/2024 16:46:46 PAGE 7   
+
+ 365   3                  lcd_clear();
+ 366   3                  power_bit = 0;
+ 367   3                  wind_bit = 0;
+ 368   3              }
+ 369   2          }
+ 370   1      
+ 371   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    499    ----
-   CONSTANT SIZE    =    105    ----
-   XDATA SIZE       =      4    ----
+   CODE SIZE        =    844    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =     10       4
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
-   BIT SIZE         =   ----    ----
+   BIT SIZE         =      4    ----
 END OF MODULE INFORMATION.
 
 

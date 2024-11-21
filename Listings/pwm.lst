@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   PWM                                                               11/20/2024 17:46:01 PAGE 1   
+C51 COMPILER V9.60.7.0   PWM                                                               11/21/2024 16:46:46 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE PWM
@@ -10,77 +10,83 @@ line level    source
 
    1          #include "STC15W4Kxx.h"
    2          #include "pwm.h"
-   3          
-   4          void PWM5Init(void)
-   5          {
-   6   1          PWMCFG = 0x08;              //配置PWM5的输出初始电平为高电平
-   7   1          PWMCKS = 0x0b;              //选择PWM的时钟为Fosc/12
-   8   1          
-   9   1          PWMC = CYCLE;               //设置PWM周期 PWMCH PWMCL
-  10   1          
-  11   1          PWM5T1 = 0;                 //设置PWM5第1次反转的PWM计数
-  12   1          PWM5T2 = 10;                //设置PWM5第2次反转的PWM计数 占空比为(PWM5T2-PWM5T1)/PWMC
-  13   1                               
-  14   1          PWM5CR = 0x00;              //选择PWM5输出到P2.3,不使能PWM5中断          
-  15   1      }
-  16          
-  17          void PWMSet(unsigned int dat)
-  18          {
-  19   1          PWM5T2 = dat;
-  20   1      }
-  21          
-  22          void PWMStart(void)
-  23          {
-  24   1          PWMCR = 0X88;
-  25   1      }
-  26          
-  27          void PWMStop(void)
-  28          {
-  29   1          PWMCR = 0X00;
-  30   1      }
-  31          
-  32          void wind_crl(unsigned char wind_num)
-  33          {
-  34   1          switch(wind_num)
-  35   1          {
-  36   2              case 0:
-  37   2                  PWMStop();
-  38   2                  break;
-  39   2              
-  40   2              case 1:
-  41   2                  PWMSet(2000);
-  42   2                  break;
-  43   2              
-  44   2              case 2:
-  45   2                  PWMSet(2400);
-  46   2                  break;
-  47   2              
-  48   2              case 3:
-  49   2                  PWMSet(2800);
-  50   2                  break;
-  51   2              
-  52   2              case 4:
-  53   2                  PWMSet(3200);
-  54   2                  break;
-C51 COMPILER V9.60.7.0   PWM                                                               11/20/2024 17:46:01 PAGE 2   
+   3          #include "timer.h"
+   4          
+   5          void PWM5Init(void)
+   6          {
+   7   1          PWMCFG = 0x08;              //配置PWM5的输出初始电平为高电平
+   8   1          PWMCKS = 0x0b;              //选择PWM的时钟为Fosc/12
+   9   1          
+  10   1          PWMC = CYCLE;               //设置PWM周期 PWMCH PWMCL
+  11   1          
+  12   1          PWM5T1 = 0;                 //设置PWM5第1次反转的PWM计数
+  13   1          PWM5T2 = 10;                //设置PWM5第2次反转的PWM计数 占空比为(PWM5T2-PWM5T1)/PWMC
+  14   1                               
+  15   1          PWM5CR = 0x00;              //选择PWM5输出到P2.3,不使能PWM5中断          
+  16   1      }
+  17          
+  18          void PWMSet(unsigned int dat)
+  19          {
+  20   1          PWMStart();
+  21   1          PWM5T2 = dat;
+  22   1      }
+  23          
+  24          void PWMStart(void)
+  25          {
+  26   1          PWMCR = 0X88;
+  27   1      }
+  28          
+  29          void PWMStop(void)
+  30          {
+  31   1          PWMCR = 0X00;
+  32   1      }
+  33          
+  34          void wind_crl(unsigned char wind_num)
+  35          {
+  36   1          if(wind_bit == 1)       
+  37   1          {
+  38   2              switch(wind_num)
+  39   2              {
+  40   3                  case 0:
+  41   3                      PWMStop();
+  42   3                      break;
+  43   3                  
+  44   3                  case 1:
+  45   3                      PWMSet(2000);
+  46   3                      break;
+  47   3                  
+  48   3                  case 2:
+  49   3                      PWMSet(1600);
+  50   3                      break;
+  51   3                  
+  52   3                  case 3:
+  53   3                      PWMSet(1200);
+  54   3                      break;
+C51 COMPILER V9.60.7.0   PWM                                                               11/21/2024 16:46:46 PAGE 2   
 
-  55   2              
-  56   2              case 5:
-  57   2                  PWMSet(3600);
-  58   2                  break;
-  59   2              
-  60   2              case 6:
-  61   2                  PWMSet(4000);
-  62   2                  break;
-  63   2          }
-  64   1      
-  65   1      }
+  55   3                  
+  56   3                  case 4:
+  57   3                      PWMSet(800);
+  58   3                      break;
+  59   3                  
+  60   3                  case 5:
+  61   3                      PWMSet(500);
+  62   3                      break;
+  63   3                  
+  64   3                  case 6:
+  65   3                      PWMSet(10);
+  66   3                      break;
+  67   3              }
+  68   2              
+  69   2          }
+  70   1          
+  71   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    126    ----
+   CODE SIZE        =    147    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =   ----    ----
+   XDATA SIZE       =   ----       2
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----

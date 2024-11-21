@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   EEPROM                                                            11/20/2024 17:46:00 PAGE 1   
+C51 COMPILER V9.60.7.0   EEPROM                                                            11/21/2024 16:46:45 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE EEPROM
@@ -15,140 +15,161 @@ line level    source
    5          #include "key.h"
    6          #include "timer.h"
    7          #include "stdio.h"
-   8          
-   9          uint8_t mode_info[4];
-  10          
-  11          void ISPIdle()
-  12          {
-  13   1          IAP_CONTR = 0X00;
-  14   1          IAP_CMD = 0X00;
-  15   1          IAP_TRIG = 0X00;
-  16   1          IAP_ADDRH = 0X80;
-  17   1          IAP_ADDRL = 0X00; 
-  18   1      }
-  19          
-  20          uint8_t ISP_read(uint16_t addr)
-  21          {
-  22   1          uint8_t dat;
-  23   1          
-  24   1          IAP_CONTR = 0X83;
-  25   1          IAP_CMD = 0X01;
-  26   1          IAP_ADDRL = addr;
-  27   1          IAP_ADDRH = addr>>8;
-  28   1          
-  29   1          IAP_TRIG = 0X5A;
-  30   1          IAP_TRIG = 0XA5;
-  31   1          
-  32   1          delay_ms(10);
-  33   1          
-  34   1          dat = IAP_DATA;
-  35   1          
-  36   1          ISPIdle();
-  37   1          
-  38   1          return dat;
-  39   1      }
-  40          
-  41          void ISP_write(uint16_t addr,uint8_t dat)
-  42          {
-  43   1          IAP_CONTR = 0X83;
-  44   1          IAP_CMD = 0X02;
-  45   1          IAP_ADDRL = addr;
-  46   1          IAP_ADDRH = addr>>8;
-  47   1          IAP_DATA = dat;
-  48   1          
-  49   1          IAP_TRIG = 0X5A;
-  50   1          IAP_TRIG = 0XA5;
-  51   1          
-  52   1          delay_ms(10);
-  53   1          
-  54   1          ISPIdle();
-C51 COMPILER V9.60.7.0   EEPROM                                                            11/20/2024 17:46:00 PAGE 2   
+   8          #include "screen.h"
+   9          #include "sync.h"
+  10          #include "pwm.h"
+  11          
+  12          void ISPIdle()
+  13          {
+  14   1          IAP_CONTR = 0X00;
+  15   1          IAP_CMD = 0X00;
+  16   1          IAP_TRIG = 0X00;
+  17   1          IAP_ADDRH = 0X80;
+  18   1          IAP_ADDRL = 0X00; 
+  19   1      }
+  20          
+  21          uint8_t ISP_read(uint16_t addr)
+  22          {
+  23   1          uint8_t dat;
+  24   1          
+  25   1          IAP_CONTR = 0X83;
+  26   1          IAP_CMD = 0X01;
+  27   1          IAP_ADDRL = addr;
+  28   1          IAP_ADDRH = addr>>8;
+  29   1          
+  30   1          IAP_TRIG = 0X5A;
+  31   1          IAP_TRIG = 0XA5;
+  32   1          
+  33   1          delay_ms(10);
+  34   1          
+  35   1          dat = IAP_DATA;
+  36   1          
+  37   1          ISPIdle();
+  38   1          
+  39   1          return dat;
+  40   1      }
+  41          
+  42          void ISP_write(uint16_t addr,uint8_t dat)
+  43          {
+  44   1          IAP_CONTR = 0X83;
+  45   1          IAP_CMD = 0X02;
+  46   1          IAP_ADDRL = addr;
+  47   1          IAP_ADDRH = addr>>8;
+  48   1          IAP_DATA = dat;
+  49   1          
+  50   1          IAP_TRIG = 0X5A;
+  51   1          IAP_TRIG = 0XA5;
+  52   1          
+  53   1          delay_ms(10);
+  54   1          
+C51 COMPILER V9.60.7.0   EEPROM                                                            11/21/2024 16:46:45 PAGE 2   
 
-  55   1      }
-  56          
-  57          void ISP_earse(uint16_t addr)
-  58          {   
-  59   1          IAP_CONTR = 0X83;   //  WT2:WT1:WT0 = 0 1 1  CPU等待时间>=12MHz
-  60   1          IAP_CMD = 0X03;
-  61   1          IAP_ADDRL = addr;
-  62   1          IAP_ADDRH = addr>>8;
-  63   1          
-  64   1          IAP_TRIG = 0X5A;
-  65   1          IAP_TRIG = 0XA5;
-  66   1          
-  67   1          delay_ms(10);
-  68   1          
-  69   1          ISPIdle();
-  70   1      }
-  71          
-  72          //void eeprom_date_write()
-  73          //{
-  74          //    if(eeprom_bit == 1)
-  75          //    { 
-  76          //        ISP_earse(0x0000);
-  77          //        
-  78          //        ISP_write(0x0000,init_temp1);       //温度1
-  79          
-  80          //        
-  81          //        eeprom_bit = 0;
-  82          //    }
-  83          //}
-  84          void eeprom_mode_save()
-  85          {
-  86   1          uint16_t addr = 0x0000;
-  87   1          ISP_earse(addr);
-  88   1          ISP_write(addr,mode_num);  
-  89   1          buzzer=buzzer_bit=0;
-  90   1      }
-  91          
-  92          void eeprom_data_write()
-  93          {
-  94   1          uint8_t i;
-  95   1          uint16_t addr;
-  96   1          
-  97   1          mode_info[0] = channel_num;         //通道
-  98   1          mode_info[1] = sync_flag;           //同步标志位
-  99   1          mode_info[2] = wind_num;            //风力
- 100   1          mode_info[3] = power_num;           //功率
- 101   1      
- 102   1          addr = (mode_num * 2)<<8;
- 103   1          
- 104   1          ISP_earse(addr);
- 105   1          for(i=0;i<4;i++)
- 106   1          {
- 107   2              ISP_write(addr,mode_info[i]);
- 108   2              addr++;
- 109   2          }
- 110   1          buzzer=buzzer_bit=0;
- 111   1      }
- 112          
- 113          void ISP_data_init()
- 114          {
- 115   1          uint8_t mode;
- 116   1          mode = ISP_read(0x0000);
-C51 COMPILER V9.60.7.0   EEPROM                                                            11/20/2024 17:46:00 PAGE 3   
+  55   1          ISPIdle();
+  56   1      }
+  57          
+  58          void ISP_earse(uint16_t addr)
+  59          {   
+  60   1          IAP_CONTR = 0X83;   //  WT2:WT1:WT0 = 0 1 1  CPU等待时间>=12MHz
+  61   1          IAP_CMD = 0X03;
+  62   1          IAP_ADDRL = addr;
+  63   1          IAP_ADDRH = addr>>8;
+  64   1          
+  65   1          IAP_TRIG = 0X5A;
+  66   1          IAP_TRIG = 0XA5;
+  67   1          
+  68   1          delay_ms(10);
+  69   1          
+  70   1          ISPIdle();
+  71   1      }
+  72          
+  73          //void eeprom_date_write()
+  74          //{
+  75          //    if(eeprom_bit == 1)
+  76          //    { 
+  77          //        ISP_earse(0x0000);
+  78          //        
+  79          //        ISP_write(0x0000,init_temp1);       //温度1
+  80          
+  81          //        
+  82          //        eeprom_bit = 0;
+  83          //    }
+  84          //}
+  85          void eeprom_mode_save()
+  86          {
+  87   1          uint16_t addr = 0x0000;
+  88   1          
+  89   1          ISP_earse(addr);
+  90   1          ISP_write(addr,mode_num);  
+  91   1          
+  92   1          buzzer=buzzer_bit=0;
+  93   1      }
+  94          
+  95          void eeprom_data_write()
+  96          {
+  97   1          uint8_t i;
+  98   1          uint16_t addr;
+  99   1          
+ 100   1          mode_info[0] = channel_num;         //通道
+ 101   1          mode_info[1] = sync_bit;           //同步标志位
+ 102   1          mode_info[2] = wind_num;            //风力
+ 103   1          mode_info[3] = power_num;           //功率
+ 104   1          mode_info[4] = temp_num;            //温度
+ 105   1      
+ 106   1          addr = (mode_num * 2)<<8;
+ 107   1          
+ 108   1          ISP_earse(addr);
+ 109   1          
+ 110   1          for(i=0;i<5;i++)
+ 111   1          {
+ 112   2              ISP_write(addr,mode_info[i]);
+ 113   2              addr++;
+ 114   2          }
+ 115   1          
+ 116   1          buzzer=buzzer_bit=0;
+C51 COMPILER V9.60.7.0   EEPROM                                                            11/21/2024 16:46:45 PAGE 3   
 
- 117   1          eeprom_data_read(mode);
- 118   1      }
- 119          
- 120          void eeprom_data_read(uint8_t mode)
- 121          {
- 122   1          uint8_t i;
- 123   1          uint16_t addr;
- 124   1          
- 125   1          addr = (mode * 2)<<8;
- 126   1          for(i=0;i<4;i++)
- 127   1          {
- 128   2              mode_info[i] = ISP_read(addr);
- 129   2          }
- 130   1      }
- 131              
+ 117   1      }
+ 118          
+ 119          void ISP_data_init()
+ 120          {
+ 121   1          mode_num = ISP_read(0x0000);
+ 122   1          eeprom_data_read(mode_num);
+ 123   1          
+ 124   1          sun_dis(power_bit);
+ 125   1          percentage_dis(DIS_ON);   
+ 126   1          sync_dis(sync_bit);
+ 127   1          num_dis(power_num);
+ 128   1          channel_dis(channel_num);
+ 129   1          wind_dis(wind_num);          //刷新界面：加热符号、通道、功率、百分比、风力、同步标志
+ 130   1          
+ 131   1          sync_judge();               //判断同步状态
+ 132   1      }
+ 133          
+ 134          void eeprom_data_read(uint8_t mode)     
+ 135          {
+ 136   1          uint8_t i;
+ 137   1          uint16_t addr;
+ 138   1          
+ 139   1          addr = (mode * 2)<<8;
+ 140   1          for(i=0;i<5;i++)
+ 141   1          {
+ 142   2              mode_info[i] = ISP_read(addr);
+ 143   2              addr++;
+ 144   2          }
+ 145   1          
+ 146   1          channel_num = mode_info[0];
+ 147   1          sync_bit = mode_info[1];
+ 148   1          wind_num = mode_info[2];
+ 149   1          power_num = mode_info[3];
+ 150   1          temp_num = mode_info[4];//读取channel_num、sync_bit、wind_num、power_num、temp_num
+ 151   1      }
+ 152              
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    313    ----
+   CODE SIZE        =    422    ----
    CONSTANT SIZE    =   ----    ----
-   XDATA SIZE       =      4       8
+   XDATA SIZE       =   ----       8
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
