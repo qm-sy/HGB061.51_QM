@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   SYNC                                                              11/21/2024 16:46:46 PAGE 1   
+C51 COMPILER V9.60.7.0   SYNC                                                              11/26/2024 13:59:09 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SYNC
@@ -62,52 +62,49 @@ line level    source
   52          
   53          void temp_listen()
   54          {   
-C51 COMPILER V9.60.7.0   SYNC                                                              11/21/2024 16:46:46 PAGE 2   
+C51 COMPILER V9.60.7.0   SYNC                                                              11/26/2024 13:59:09 PAGE 2   
 
   55   1          static uint8_t temp; 
   56   1          temp = (uint8_t)get_temp(6);
-  57   1          if(temp_dis_bit)
+  57   1          if(temp>=temp_num)
   58   1          {
-  59   2              printf("The value of temp: %d \r\n",(int)temp);
-  60   2          }
-  61   1          if(temp>=temp_num)
-  62   1          {
-  63   2              alarm_dis(DIS_ON);
-  64   2              power_bit = 0;
-  65   2          }
-  66   1          
-  67   1          if(temp<temp_num)    
-  68   1          {
-  69   2              if(sync_bit==0)
-  70   2              {
-  71   3                  alarm_dis(DIS_OFF);
-  72   3                  power_bit = 1;
-  73   3              }
-  74   2              if(sync_bit==1)
-  75   2              {
-  76   3                  if(external_24bit==1)
-  77   3                  {
-  78   4                      alarm_dis(DIS_OFF);
-  79   4                      power_bit = 1; 
-  80   4                  }
-  81   3              }
-  82   2          }
-  83   1      
-  84   1          
-  85   1          if(sync_bit==1)
-  86   1          {
-  87   2              if(external_24bit==1)
-  88   2              {
-  89   3                  alarm_dis(DIS_OFF);
-  90   3                  power_bit = 1; 
-  91   3              }
-  92   2          }
-  93   1      }
+  59   2              alarm_dis(DIS_ON);
+  60   2              P05 = 1;
+  61   2          }
+  62   1          
+  63   1          if(temp<temp_num)    
+  64   1          {
+  65   2              if(sync_bit==0)
+  66   2              {
+  67   3                  alarm_dis(DIS_OFF);
+  68   3                  P05 = 0;
+  69   3              }
+  70   2              if(sync_bit==1)
+  71   2              {
+  72   3                  if(external_24bit==1)
+  73   3                  {
+  74   4                      alarm_dis(DIS_OFF);
+  75   4                      P05 = 0; 
+  76   4                  }
+  77   3              }
+  78   2          }
+  79   1      
+  80   1          
+  81   1      //    if(sync_bit==1)
+  82   1      //        
+  83   1      //    {
+  84   1      //        if(external_24bit==1)
+  85   1      //        {
+  86   1      //            //alarm_dis(DIS_OFF);
+  87   1      //            power_bit = 1; 
+  88   1      //        }
+  89   1      //    }
+  90   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    183    ----
-   CONSTANT SIZE    =     25    ----
+   CODE SIZE        =    145    ----
+   CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =      3    ----
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----

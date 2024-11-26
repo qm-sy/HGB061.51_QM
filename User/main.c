@@ -28,9 +28,12 @@ void main()
     EA = 1;
     P42 = 0;
     P23 = 0;
+    
     PWM5Init(); 
+    P05 = 0;
+    wind_crl(0);
       
-    printf("========code start========\r\n");  
+    printf("======== code start ========\r\n");  
     
     restart:
     delay_ms(1000);
@@ -39,11 +42,12 @@ void main()
         on_off = power_on();
     }  
     P20 = 0; 
+    
+    
     led_init();    
     lcd_init();  
     ISP_data_init();
     buzzer=buzzer_bit=0;
-    
     
     while(1)
     {

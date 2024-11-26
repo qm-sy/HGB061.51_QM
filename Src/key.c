@@ -12,6 +12,7 @@
 bit on_off = 1;
 
 bit sync_bit = 0;
+
 uint8_t wind_num = 0;
 uint8_t power_num = 0;
 uint8_t mode_num = 0;
@@ -298,6 +299,7 @@ void mode_choose()
     wind_dis(wind_num);          //刷新界面：加热符号、通道、功率、百分比、风力、同步标志
     
     sync_judge();               //判断同步状态
+    temp_listen();
 
     eeprom_mode_save();         //记录模式序号
 }
@@ -361,10 +363,10 @@ void power_off()
         }
         if(continue_cnt == 0)           //长按1s判断，开启同步 
         {
-            on_off = 1;
             lcd_clear();
             power_bit = 0;
-            wind_bit = 0;
+            PWMStop();
+            on_off = 1;
         }
     }
 

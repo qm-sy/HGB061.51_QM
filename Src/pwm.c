@@ -29,6 +29,7 @@ void PWMStart(void)
 void PWMStop(void)
 {
     PWMCR = 0X00;
+    PWMSet(10);
 }
 
 void wind_crl(unsigned char wind_num)
@@ -46,23 +47,23 @@ void wind_crl(unsigned char wind_num)
                 break;
             
             case 2:
-                PWMSet(1600);
+                PWMSet(2400);
                 break;
             
             case 3:
-                PWMSet(1200);
+                PWMSet(2800);
                 break;
             
             case 4:
-                PWMSet(800);
+                PWMSet(3200);
                 break;
             
             case 5:
-                PWMSet(500);
+                PWMSet(3600);
                 break;
             
             case 6:
-                PWMSet(10);
+                PWMSet(4000);
                 break;
         }
         

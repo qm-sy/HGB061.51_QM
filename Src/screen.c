@@ -93,16 +93,38 @@ void num_dis(uint8_t num)
     value_0A |= num_tab[hundreds];
     value_07 |= num_tab[tens];
     value_06 |= num_tab[ones]; 
+
+    if((num<10)&&(num>=0))
+    {
+        lcd_write_val(addr_tab[ADDR_0B],0x00);
+
+        lcd_write_val(addr_tab[ADDR_0A],0X00);
+        
+        lcd_write_val(addr_tab[ADDR_07],0X00);
+
+        lcd_write_val(addr_tab[ADDR_06],value_06);  
+    }
+    else if((num<100)&&(num>=10))
+    {
+        lcd_write_val(addr_tab[ADDR_0B],0x00);
+
+        lcd_write_val(addr_tab[ADDR_0A],0X00);
+        
+        lcd_write_val(addr_tab[ADDR_07],value_07);
+
+        lcd_write_val(addr_tab[ADDR_06],value_06);   
+    }
+    else
+    {
+        lcd_write_val(addr_tab[ADDR_0B],value_0B);
+        
+        lcd_write_val(addr_tab[ADDR_0A],value_0A);
+        
+        lcd_write_val(addr_tab[ADDR_07],value_07);
+
+        lcd_write_val(addr_tab[ADDR_06],value_06);
+    }
     
-    lcd_write_val(addr_tab[ADDR_0B],value_0B);
-
-    lcd_write_val(addr_tab[ADDR_0A],value_0A);
-    
-    lcd_write_val(addr_tab[ADDR_07],value_07);
-
-    lcd_write_val(addr_tab[ADDR_06],value_06); 
-
-
 }
 
 void wind_dis(uint8_t num)
@@ -149,7 +171,7 @@ void wind_dis(uint8_t num)
 void channel_dis(uint8_t num)
 {
     value_0E &= 0x80;
-    value_0B &= 0x0f;
+    value_0B &= 0x00;
     
     switch(num)
     {

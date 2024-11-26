@@ -54,14 +54,10 @@ void temp_listen()
 {   
     static uint8_t temp; 
     temp = (uint8_t)get_temp(6);
-    if(temp_dis_bit)
-    {
-        printf("The value of temp: %d \r\n",(int)temp);
-    }
     if(temp>=temp_num)
     {
         alarm_dis(DIS_ON);
-        power_bit = 0;
+        P05 = 1;
     }
     
     if(temp<temp_num)    
@@ -69,25 +65,26 @@ void temp_listen()
         if(sync_bit==0)
         {
             alarm_dis(DIS_OFF);
-            power_bit = 1;
+            P05 = 0;
         }
         if(sync_bit==1)
         {
             if(external_24bit==1)
             {
                 alarm_dis(DIS_OFF);
-                power_bit = 1; 
+                P05 = 0; 
             }
         }
     }
 
     
-    if(sync_bit==1)
-    {
-        if(external_24bit==1)
-        {
-            alarm_dis(DIS_OFF);
-            power_bit = 1; 
-        }
-    }
+//    if(sync_bit==1)
+//        
+//    {
+//        if(external_24bit==1)
+//        {
+//            //alarm_dis(DIS_OFF);
+//            power_bit = 1; 
+//        }
+//    }
 }
