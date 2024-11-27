@@ -38,6 +38,7 @@ uint16_t Get_ADC12bitResult(uint8_t channel_x)
     adc_value |= (ADC_RES << 2);
 
     return adc_value;
+  
 }
 
 

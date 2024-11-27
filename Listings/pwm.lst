@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   PWM                                                               11/26/2024 13:59:09 PAGE 1   
+C51 COMPILER V9.60.7.0   PWM                                                               11/27/2024 14:50:27 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE PWM
@@ -38,54 +38,55 @@ line level    source
   28          
   29          void PWMStop(void)
   30          {
-  31   1          PWMCR = 0X00;
-  32   1          PWMSet(10);
-  33   1      }
-  34          
-  35          void wind_crl(unsigned char wind_num)
-  36          {
-  37   1          if(wind_bit == 1)       
-  38   1          {
-  39   2              switch(wind_num)
-  40   2              {
-  41   3                  case 0:
-  42   3                      PWMStop();
-  43   3                      break;
-  44   3                  
-  45   3                  case 1:
-  46   3                      PWMSet(2000);
-  47   3                      break;
-  48   3                  
-  49   3                  case 2:
-  50   3                      PWMSet(2400);
-  51   3                      break;
-  52   3                  
-  53   3                  case 3:
-  54   3                      PWMSet(2800);
-C51 COMPILER V9.60.7.0   PWM                                                               11/26/2024 13:59:09 PAGE 2   
+  31   1          
+  32   1          PWMCR = 0X00;
+  33   1          P23 = 1;
+  34   1      }
+  35          
+  36          void wind_crl(unsigned char wind_num)
+  37          {
+  38   1          if(wind_bit == 1)       
+  39   1          {
+  40   2              switch(wind_num)
+  41   2              {
+  42   3                  case 0:
+  43   3                      PWMStop();
+  44   3                      break;
+  45   3                  
+  46   3                  case 1:
+  47   3                      PWMSet(2000);
+  48   3                      break;
+  49   3                  
+  50   3                  case 2:
+  51   3                      PWMSet(2400);
+  52   3                      break;
+  53   3                  
+  54   3                  case 3:
+C51 COMPILER V9.60.7.0   PWM                                                               11/27/2024 14:50:27 PAGE 2   
 
-  55   3                      break;
-  56   3                  
-  57   3                  case 4:
-  58   3                      PWMSet(3200);
-  59   3                      break;
-  60   3                  
-  61   3                  case 5:
-  62   3                      PWMSet(3600);
-  63   3                      break;
-  64   3                  
-  65   3                  case 6:
-  66   3                      PWMSet(4000);
-  67   3                      break;
-  68   3              }
-  69   2              
-  70   2          }
-  71   1          
-  72   1      }
+  55   3                      PWMSet(2800);
+  56   3                      break;
+  57   3                  
+  58   3                  case 4:
+  59   3                      PWMSet(3200);
+  60   3                      break;
+  61   3                  
+  62   3                  case 5:
+  63   3                      PWMSet(3600);
+  64   3                      break;
+  65   3                  
+  66   3                  case 6:
+  67   3                      PWMSet(4000);
+  68   3                      break;
+  69   3              }
+  70   2              
+  71   2          }
+  72   1          
+  73   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    152    ----
+   CODE SIZE        =    149    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----       2
    PDATA SIZE       =   ----    ----

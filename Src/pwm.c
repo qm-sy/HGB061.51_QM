@@ -28,8 +28,9 @@ void PWMStart(void)
 
 void PWMStop(void)
 {
+    
     PWMCR = 0X00;
-    PWMSet(10);
+    P23 = 1;
 }
 
 void wind_crl(unsigned char wind_num)

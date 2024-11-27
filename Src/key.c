@@ -100,6 +100,10 @@ void button_scan()
                 break;
 
         }
+        if(power_bit==1)
+        {
+            sun_dis(DIS_ON);
+        }
         scan_stop_bit = 1;
         scan_start_bit = 0;
     }
@@ -202,13 +206,16 @@ void channel_choose()
         channel_num += 1;
     }
     channel_dis(channel_num);
-    
+    if(power_bit==1)
+    {
+        sun_dis(DIS_ON);
+    }
     eeprom_data_write();
 }
 
 void temp_set()
 {
-    char num3 = 0;
+    unsigned char num3 = 0;
     num3 = temp_num;
     
     buzzer=buzzer_bit=0;
@@ -238,9 +245,9 @@ void temp_set()
         {
             buzzer=buzzer_bit=0;
             num3+=5;
-            if(num3>100)
+            if(num3>200)
             {
-                num3 = 100;
+                num3 = 200;
             }
             temp_num = num3;
 
@@ -250,9 +257,9 @@ void temp_set()
         {
             buzzer=buzzer_bit=0;
             num3-=5;
-            if(num3<0)
+            if(num3<20)
             {
-                num3 = 0;
+                num3 = 20;
             }
             temp_num = num3;
 
@@ -264,8 +271,12 @@ void temp_set()
     
     num_dis(power_num);           
     channel_dis(channel_num);
+    Celsius_dis(DIS_OFF);
     percentage_dis(DIS_ON);
-    
+    if(power_bit==1)
+    {
+        sun_dis(DIS_ON);
+    }
     eeprom_data_write();
 }
 
@@ -365,6 +376,7 @@ void power_off()
         {
             lcd_clear();
             power_bit = 0;
+            sun_dis(DIS_OFF);
             PWMStop();
             on_off = 1;
         }

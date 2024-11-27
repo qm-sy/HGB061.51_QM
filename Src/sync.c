@@ -10,16 +10,18 @@
 
 void sync_judge()
 {
-    if(sync_bit==1)
+    if(sync_bit == 1)
     {
-        if(external_24bit==1)
+        if(external_24bit == 1)
         {
             power_bit = 1;
+            sun_dis(DIS_ON);
             wind_bit = 1;
         }
         else
         {
             power_bit = 0;
+            sun_dis(DIS_OFF);
             wind_bit = 0;
             PWMStop();
         }
@@ -27,6 +29,7 @@ void sync_judge()
     else
     {
         power_bit = 1;
+        sun_dis(DIS_ON);
         wind_bit = 1; 
     }
     
@@ -58,6 +61,7 @@ void temp_listen()
     {
         alarm_dis(DIS_ON);
         P05 = 1;
+        P54 = temp_dis_bit;
     }
     
     if(temp<temp_num)    
@@ -66,6 +70,7 @@ void temp_listen()
         {
             alarm_dis(DIS_OFF);
             P05 = 0;
+            P54 = 1;
         }
         if(sync_bit==1)
         {
@@ -73,6 +78,7 @@ void temp_listen()
             {
                 alarm_dis(DIS_OFF);
                 P05 = 0; 
+                P54 = 1;
             }
         }
     }
