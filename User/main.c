@@ -61,6 +61,7 @@ void main()
         external_24V_listen();
         temp_listen();
         power_off();
+        sync_fan_delay_listen();
         if(on_off == 1)
         {
             buzzer=buzzer_bit=0;
@@ -69,5 +70,6 @@ void main()
             P20 = 1;
             goto restart;   
         }
+        
     }
 }

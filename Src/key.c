@@ -257,9 +257,9 @@ void temp_set()
         {
             buzzer=buzzer_bit=0;
             num3-=5;
-            if(num3<20)
+            if(num3<50)
             {
-                num3 = 20;
+                num3 = 50;
             }
             temp_num = num3;
 
@@ -308,8 +308,11 @@ void mode_choose()
     channel_dis(channel_num);
     percentage_dis(DIS_ON);
     wind_dis(wind_num);          //刷新界面：加热符号、通道、功率、百分比、风力、同步标志
-    
+    delay_bit1 = 0;
+    delay_bit2 = 0;
+
     sync_judge();               //判断同步状态
+
     temp_listen();
 
     eeprom_mode_save();         //记录模式序号

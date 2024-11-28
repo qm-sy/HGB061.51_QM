@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   SYNC                                                              11/27/2024 14:50:28 PAGE 1   
+C51 COMPILER V9.60.7.0   SYNC                                                              11/28/2024 10:23:27 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE SYNC
@@ -22,95 +22,123 @@ line level    source
   12          {
   13   1          if(sync_bit == 1)
   14   1          {
-  15   2              if(external_24bit == 1)
-  16   2              {
-  17   3                  power_bit = 1;
-  18   3                  sun_dis(DIS_ON);
-  19   3                  wind_bit = 1;
-  20   3              }
-  21   2              else
-  22   2              {
-  23   3                  power_bit = 0;
-  24   3                  sun_dis(DIS_OFF);
-  25   3                  wind_bit = 0;
-  26   3                  PWMStop();
-  27   3              }
-  28   2          }
-  29   1          else
-  30   1          {
-  31   2              power_bit = 1;
-  32   2              sun_dis(DIS_ON);
-  33   2              wind_bit = 1; 
-  34   2          }
-  35   1          
-  36   1          power_crl(power_num);
-  37   1          wind_crl(wind_num);         //刷新风力和功率
-  38   1      }
-  39          
-  40          void led_init()
-  41          {
-  42   1          P24 = P25 = P26 = 0;
-  43   1          P43 = P44 = 0;
-  44   1      }
-  45          
-  46          void external_24V_listen()
-  47          {
-  48   1          static now_value = 0;
-  49   1          if(now_value!=previous_value)
-  50   1          {
-  51   2              sync_judge();
-  52   2              now_value = previous_value;
-  53   2          }
-  54   1      }
-C51 COMPILER V9.60.7.0   SYNC                                                              11/27/2024 14:50:28 PAGE 2   
+  15   2              
+  16   2              if(external_24bit == 1)
+  17   2              {
+  18   3                  power_bit = 1;
+  19   3                  sun_dis(DIS_ON);
+  20   3                  wind_bit = 1;
+  21   3                  delay_bit1 = 1;
+  22   3                  delay_bit2 = 0;
+  23   3              }
+  24   2              else
+  25   2              {
+  26   3                  delay_bit2 = 1;
+  27   3                  power_bit = 0;
+  28   3                  sun_dis(DIS_OFF);
+  29   3                  wind_bit = 0;
+  30   3                  PWMStop(); 
+  31   3              }
+  32   2          }
+  33   1          else
+  34   1          {
+  35   2              //delay_bit1 = 0;
+  36   2              power_bit = 1;
+  37   2              sun_dis(DIS_ON);
+  38   2              wind_bit = 1; 
+  39   2          }
+  40   1          
+  41   1          power_crl(power_num);
+  42   1          wind_crl(wind_num);         //刷新风力和功率
+  43   1      }
+  44          
+  45          void sync_fan_delay_listen()
+  46          {
+  47   1          if((delay_bit1 == 1)&&(delay_bit2 == 1))
+  48   1          {
+  49   2              wind_bit = 1;  
+  50   2              wind_crl(wind_num);  
+  51   2          }
+  52   1          
+  53   1      //    if((sync_bit == 1)&&(delay_bit2 == 0))
+  54   1      //    {
+C51 COMPILER V9.60.7.0   SYNC                                                              11/28/2024 10:23:27 PAGE 2   
 
-  55          
-  56          void temp_listen()
-  57          {   
-  58   1          static uint8_t temp; 
-  59   1          temp = (uint8_t)get_temp(6);
-  60   1          if(temp>=temp_num)
-  61   1          {
-  62   2              alarm_dis(DIS_ON);
-  63   2              P05 = 1;
-  64   2              P54 = temp_dis_bit;
-  65   2          }
-  66   1          
-  67   1          if(temp<temp_num)    
-  68   1          {
-  69   2              if(sync_bit==0)
-  70   2              {
-  71   3                  alarm_dis(DIS_OFF);
-  72   3                  P05 = 0;
-  73   3                  P54 = 1;
-  74   3              }
-  75   2              if(sync_bit==1)
-  76   2              {
-  77   3                  if(external_24bit==1)
-  78   3                  {
-  79   4                      alarm_dis(DIS_OFF);
-  80   4                      P05 = 0; 
-  81   4                      P54 = 1;
-  82   4                  }
-  83   3              }
-  84   2          }
-  85   1      
-  86   1          
-  87   1      //    if(sync_bit==1)
-  88   1      //        
-  89   1      //    {
-  90   1      //        if(external_24bit==1)
-  91   1      //        {
-  92   1      //            //alarm_dis(DIS_OFF);
-  93   1      //            power_bit = 1; 
-  94   1      //        }
-  95   1      //    }
-  96   1      }
+  55   1      //        wind_bit = 1;  
+  56   1      //        wind_crl(wind_num); 
+  57   1      //    }
+  58   1          
+  59   1          if(delay_bit3 == 1)
+  60   1          {  
+  61   2              printf("here");
+  62   2              PWMStop();
+  63   2              delay_bit3 = 0;
+  64   2          }
+  65   1      }
+  66          void led_init()
+  67          {
+  68   1          P24 = P25 = P26 = 0;
+  69   1          P43 = P44 = 0;
+  70   1      }
+  71          
+  72          void external_24V_listen()
+  73          {
+  74   1          static now_value = 0;
+  75   1          if(now_value!=previous_value)
+  76   1          {
+  77   2              sync_judge();
+  78   2              now_value = previous_value;
+  79   2          }
+  80   1      }
+  81          
+  82          void temp_listen()
+  83          {   
+  84   1          static uint8_t temp; 
+  85   1          temp = (uint8_t)get_temp(6);
+  86   1          if(temp>=temp_num)
+  87   1          {
+  88   2              alarm_dis(DIS_ON);
+  89   2              P05 = 1;
+  90   2              P54 = temp_dis_bit;
+  91   2          }
+  92   1          
+  93   1          if(temp<temp_num)    
+  94   1          {
+  95   2              if(sync_bit==0)
+  96   2              {
+  97   3                  alarm_dis(DIS_OFF);
+  98   3                  P05 = 0;
+  99   3                  P54 = 1;
+ 100   3              }
+ 101   2              if(sync_bit==1)
+ 102   2              {
+ 103   3                  if(external_24bit==1)
+ 104   3                  {
+ 105   4                      alarm_dis(DIS_OFF);
+ 106   4                      P05 = 0; 
+ 107   4                      P54 = 1;
+ 108   4                  }
+ 109   3              }
+ 110   2          }
+ 111   1      
+ 112   1          
+ 113   1      //    if(sync_bit==1)
+ 114   1      //        
+ 115   1      //    {
+ 116   1      //        if(external_24bit==1)
+C51 COMPILER V9.60.7.0   SYNC                                                              11/28/2024 10:23:27 PAGE 3   
+
+ 117   1      //        {
+ 118   1      //            //alarm_dis(DIS_OFF);
+ 119   1      //            power_bit = 1; 
+ 120   1      //        }
+ 121   1      //    }
+ 122   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    163    ----
-   CONSTANT SIZE    =   ----    ----
+   CODE SIZE        =    212    ----
+   CONSTANT SIZE    =      5    ----
    XDATA SIZE       =      3    ----
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----

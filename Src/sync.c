@@ -12,22 +12,27 @@ void sync_judge()
 {
     if(sync_bit == 1)
     {
+        
         if(external_24bit == 1)
         {
             power_bit = 1;
             sun_dis(DIS_ON);
             wind_bit = 1;
+            delay_bit1 = 1;
+            delay_bit2 = 0;
         }
         else
         {
+            delay_bit2 = 1;
             power_bit = 0;
             sun_dis(DIS_OFF);
             wind_bit = 0;
-            PWMStop();
+            PWMStop(); 
         }
     }
     else
     {
+        //delay_bit1 = 0;
         power_bit = 1;
         sun_dis(DIS_ON);
         wind_bit = 1; 
@@ -37,6 +42,27 @@ void sync_judge()
     wind_crl(wind_num);         //刷新风力和功率
 }
 
+void sync_fan_delay_listen()
+{
+    if((delay_bit1 == 1)&&(delay_bit2 == 1))
+    {
+        wind_bit = 1;  
+        wind_crl(wind_num);  
+    }
+    
+//    if((sync_bit == 1)&&(delay_bit2 == 0))
+//    {
+//        wind_bit = 1;  
+//        wind_crl(wind_num); 
+//    }
+    
+    if(delay_bit3 == 1)
+    {  
+        printf("here");
+        PWMStop();
+        delay_bit3 = 0;
+    }
+}
 void led_init()
 {
     P24 = P25 = P26 = 0;

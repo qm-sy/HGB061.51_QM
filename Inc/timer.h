@@ -9,6 +9,9 @@ extern bit zero_bit;
 extern bit buzzer_bit;
 extern bit scan_stop_bit;
 extern bit scan_start_bit;
+extern bit delay_bit1;
+extern bit delay_bit2;
+extern bit delay_bit3;
 
 sbit tempchannel1 = P1^7;
 sbit tempchannel2 = P2^1;

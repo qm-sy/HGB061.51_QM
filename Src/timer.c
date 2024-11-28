@@ -13,6 +13,9 @@ bit external_24bit = 0;
 bit power_bit = 1;
 bit wind_bit = 1;
 bit previous_value = 0;
+bit delay_bit1 = 0;
+bit delay_bit2 = 0;
+bit delay_bit3 = 0;
 uint8_t channel_num = 1;
 uint16_t tim1_t = 58400;
 void Tim0Init()         //11.0592Mhz  1ms
@@ -105,7 +108,27 @@ void Tim3Isr(void) interrupt 19
     static uint8_t temp_delay_cnt = 0;
     static uint8_t fan_rotate_cnt = 0;
     static uint8_t temp_rotate_cnt = 0;
+    static uint16_t fan_delay_cnt = 0;
     
+    if((delay_bit1 == 1)&&(delay_bit2 == 1))
+    {
+        fan_delay_cnt++;
+        if(fan_delay_cnt==12000)
+        {
+            fan_delay_cnt = 0;
+            delay_bit1 = 0;
+            delay_bit2 = 0;
+            delay_bit3 = 1;
+        }
+    }
+    if((delay_bit1&delay_bit2)==0)
+    {
+        fan_delay_cnt = 0;
+    }
+//    if((delay_bit1 == 1)&&(delay_bit2 == 0))
+//    {
+//        fan_delay_cnt = 0;
+//    }
     fan_rotate_cnt++;
     if(fan_rotate_cnt>15)
     {
