@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   EEPROM                                                            11/28/2024 10:23:26 PAGE 1   
+C51 COMPILER V9.60.7.0   EEPROM                                                            12/12/2024 17:36:02 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE EEPROM
@@ -62,7 +62,7 @@ line level    source
   52   1          
   53   1          delay_ms(10);
   54   1          
-C51 COMPILER V9.60.7.0   EEPROM                                                            11/28/2024 10:23:26 PAGE 2   
+C51 COMPILER V9.60.7.0   EEPROM                                                            12/12/2024 17:36:02 PAGE 2   
 
   55   1          ISPIdle();
   56   1      }
@@ -126,12 +126,12 @@ line level    source
  114   2          }
  115   1          
  116   1          buzzer=buzzer_bit=0;
-C51 COMPILER V9.60.7.0   EEPROM                                                            11/28/2024 10:23:26 PAGE 3   
+C51 COMPILER V9.60.7.0   EEPROM                                                            12/12/2024 17:36:02 PAGE 3   
 
  117   1      }
  118          
  119          void ISP_data_init()
- 120          {
+ 120          {  
  121   1          mode_num = ISP_read(0x0000);
  122   1          eeprom_data_read(mode_num);
  123   1          

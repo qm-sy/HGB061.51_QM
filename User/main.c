@@ -15,6 +15,8 @@
 
 void main()
 {
+    uint8_t x;
+    uint8_t y;
     P_SW2 |= 0x80;
     
     GPIOInit();
@@ -34,6 +36,24 @@ void main()
     PWMStop();
       
     printf("======== code start ========\r\n");  
+
+    x = ISP_read(0x0000);
+    if((x!=1)&&(x!=2)&&(x!=3)&&(x!=4)&&(x!=5))
+    {
+        mode_num = 1;
+        channel_num = 1;
+        sync_bit = 1;
+        wind_num = 3;
+        power_num = 50;
+        temp_num = 100;//¶ÁÈ¡channel_num¡¢sync_bit¡¢wind_num¡¢power_num¡¢temp_num
+        eeprom_mode_save();
+        for(y = 1;y<6;y++) 
+        
+        {
+            mode_num = y;
+            eeprom_data_write();
+         }
+    }
     
     restart:
     delay_ms(1000);

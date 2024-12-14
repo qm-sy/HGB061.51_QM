@@ -117,7 +117,7 @@ void eeprom_data_write()
 }
 
 void ISP_data_init()
-{
+{  
     mode_num = ISP_read(0x0000);
     eeprom_data_read(mode_num);
     

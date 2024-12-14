@@ -1,4 +1,4 @@
-C51 COMPILER V9.60.7.0   MAIN                                                              11/28/2024 10:23:27 PAGE 1   
+C51 COMPILER V9.60.7.0   MAIN                                                              12/12/2024 17:36:03 PAGE 1   
 
 
 C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
@@ -25,72 +25,91 @@ line level    source
   15          
   16          void main()
   17          {
-  18   1          P_SW2 |= 0x80;
-  19   1          
-  20   1          GPIOInit();
-  21   1          ADCInit();
-  22   1          Uart1Init();
-  23   1          Tim0Init();
-  24   1          Tim1Init();
-  25   1          Tim3Init();
-  26   1          IT0 = 1;   //œ¬Ωµ—ÿ¥•∑¢π˝¡„ºÏ≤‚–≈∫≈
-  27   1          EX0 = 1;
-  28   1          EA = 1;
-  29   1          P42 = 0;
-  30   1          P23 = 0;
-  31   1          P54 = 1;
-  32   1          PWM5Init(); 
-  33   1          P05 = 0;
-  34   1          PWMStop();
-  35   1            
-  36   1          printf("======== code start ========\r\n");  
-  37   1          
-  38   1          restart:
-  39   1          delay_ms(1000);
-  40   1          
-  41   1          while(on_off)
+  18   1          uint8_t x;
+  19   1          uint8_t y;
+  20   1          P_SW2 |= 0x80;
+  21   1          
+  22   1          GPIOInit();
+  23   1          ADCInit();
+  24   1          Uart1Init();
+  25   1          Tim0Init();
+  26   1          Tim1Init();
+  27   1          Tim3Init();
+  28   1          IT0 = 1;   //œ¬Ωµ—ÿ¥•∑¢π˝¡„ºÏ≤‚–≈∫≈
+  29   1          EX0 = 1;
+  30   1          EA = 1;
+  31   1          P42 = 0;
+  32   1          P23 = 0;
+  33   1          P54 = 1;
+  34   1          PWM5Init(); 
+  35   1          P05 = 0;
+  36   1          PWMStop();
+  37   1            
+  38   1          printf("======== code start ========\r\n");  
+  39   1      
+  40   1          x = ISP_read(0x0000);
+  41   1          if((x!=1)&&(x!=2)&&(x!=3)&&(x!=4)&&(x!=5))
   42   1          {
-  43   2              on_off = power_on();
-  44   2          }  
-  45   1          P20 = 0; 
-  46   1      
-  47   1          led_init();    
-  48   1          lcd_init();  
-  49   1          ISP_data_init();
-  50   1          percentage_dis(DIS_ON);
-  51   1          if(power_bit==1)
-  52   1          {
-  53   2              sun_dis(DIS_ON);
-  54   2          }
-C51 COMPILER V9.60.7.0   MAIN                                                              11/28/2024 10:23:27 PAGE 2   
+  43   2              mode_num = 1;
+  44   2              channel_num = 1;
+  45   2              sync_bit = 1;
+  46   2              wind_num = 3;
+  47   2              power_num = 50;
+  48   2              temp_num = 100;//∂¡»°channel_num°¢sync_bit°¢wind_num°¢power_num°¢temp_num
+  49   2              eeprom_mode_save();
+  50   2              for(y = 1;y<6;y++)
+  51   2              {
+  52   3                  mode_num = y;
+  53   3                  eeprom_data_write();
+  54   3               }
+C51 COMPILER V9.60.7.0   MAIN                                                              12/12/2024 17:36:03 PAGE 2   
 
-  55   1          buzzer=buzzer_bit=0;
+  55   2          }
   56   1          
-  57   1          while(1)
-  58   1          {
-  59   2              button_scan();
-  60   2              fan_rotate();
-  61   2              external_24V_listen();
-  62   2              temp_listen();
-  63   2              power_off();
-  64   2              sync_fan_delay_listen();
-  65   2              if(on_off == 1)
-  66   2              {
-  67   3                  buzzer=buzzer_bit=0;
-  68   3                  P24 = P25 = P26 = 1;
-  69   3                  P43 = P44 = 1;
-  70   3                  P20 = 1;
-  71   3                  goto restart;   
-  72   3              }
-  73   2              
-  74   2          }
-  75   1      }
+  57   1          restart:
+  58   1          delay_ms(1000);
+  59   1          
+  60   1          while(on_off)
+  61   1          {
+  62   2              on_off = power_on();
+  63   2          }  
+  64   1          P20 = 0; 
+  65   1      
+  66   1          led_init();    
+  67   1          lcd_init();  
+  68   1          ISP_data_init();
+  69   1          percentage_dis(DIS_ON);
+  70   1          if(power_bit==1)
+  71   1          {
+  72   2              sun_dis(DIS_ON);
+  73   2          }
+  74   1          buzzer=buzzer_bit=0;
+  75   1          
+  76   1          while(1)
+  77   1          {
+  78   2              button_scan();
+  79   2              fan_rotate();
+  80   2              external_24V_listen();
+  81   2              temp_listen();
+  82   2              power_off();
+  83   2              sync_fan_delay_listen();
+  84   2              if(on_off == 1)
+  85   2              {
+  86   3                  buzzer=buzzer_bit=0;
+  87   3                  P24 = P25 = P26 = 1;
+  88   3                  P43 = P44 = 1;
+  89   3                  P20 = 1;
+  90   3                  goto restart;   
+  91   3              }
+  92   2              
+  93   2          }
+  94   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    137    ----
+   CODE SIZE        =    233    ----
    CONSTANT SIZE    =     31    ----
-   XDATA SIZE       =   ----    ----
+   XDATA SIZE       =   ----       1
    PDATA SIZE       =   ----    ----
    DATA SIZE        =   ----    ----
    IDATA SIZE       =   ----    ----
