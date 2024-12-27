@@ -1,0 +1,16 @@
+".\Output\STARTUP.obj",
+".\Output\adc.obj",
+".\Output\delay.obj",
+".\Output\eeprom.obj",
+".\Output\gpio.obj",
+".\Output\modbus.obj",
+".\Output\ntc.obj",
+".\Output\pwm.obj",
+".\Output\timer.obj",
+".\Output\uart.obj",
+".\Output\screen.obj",
+".\Output\key.obj",
+".\Output\sync.obj",
+".\Output\main.obj" 
+TO ".\Output\HGB06_1.51_V001_C" 
+PRINT(".\Listings\HGB06_1.m51") RAMSIZE(256) 

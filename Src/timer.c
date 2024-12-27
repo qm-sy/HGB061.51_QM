@@ -11,6 +11,7 @@ bit scan_stop_bit = 1;
 bit scan_start_bit = 0;  
 bit external_24bit = 0;
 bit power_bit = 1;
+bit power_bit2 = 0;
 bit wind_bit = 1;
 bit previous_value = 0;
 bit delay_bit1 = 0;
@@ -18,17 +19,15 @@ bit delay_bit2 = 0;
 bit delay_bit3 = 0;
 uint8_t channel_num = 1;
 uint16_t tim1_t = 58400;
+uint8_t pwm_num_cnt = 0;
 void Tim0Init()         //11.0592Mhz  1ms
 {
-    AUXR |= 0X80;       //修改计数速率，定时器时钟设置为12T模式
-	
-	TMOD &= 0XF0;       //清空TIM0需要配置的低四位（低四位是TIM0,高四位是TIM1）
-
-	TH0 = 0XCD;         // TH0 高四位  TL0 低四位
-	TL0 = 0XD4;         //通过计算得出的值，计算公式在下面
-	
-	TF0 = 0;            //清除TC0N-TF0  中断溢出标志，溢出后自动置1，CPU响应中断后置硬件清0
-	TR0 = 1;            //TCON-TR0  TIM0开始计数启动
+	AUXR &= 0x7F;			//定时器时钟12T模式
+	TMOD &= 0xF0;			//设置定时器模式
+	TL0 = 0xF4;				//设置定时初始值
+	TH0 = 0xFF;				//设置定时初始值
+	TF0 = 0;				//清除TF0标志
+	TR0 = 1;				//定时器0开始计时
 
 	ET0 = 1;            //打开IE-ET0，TIM0中断
 }
@@ -67,6 +66,20 @@ void ET0ISR(void) interrupt 0
 void Tim0Isr(void) interrupt 1 
 {
 
+    if( P16 == 0 )
+    {
+        pwm_num_cnt++;
+        if(pwm_num_cnt==100)
+        {
+            power_bit2 = 0; 
+        }
+    }
+    if( P16 == 1 )
+    {
+        pwm_num_cnt = 0;
+        power_bit2 = 1;
+        buzzer = 1;
+    }
 }
 
 void Tim1Isr(void) interrupt 3 
@@ -205,7 +218,7 @@ void Tim3Isr(void) interrupt 19
 
 void power_crl(uint8_t power_num)
 { 
-    if(power_bit==1)
+    if((power_bit==1)&&(power_bit2 == 1))
     {
         ET1 = 1;
     }

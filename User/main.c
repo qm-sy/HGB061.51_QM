@@ -33,6 +33,7 @@ void main()
     P54 = 1;
     PWM5Init(); 
     P05 = 0;
+
     PWMStop();
       
     printf("======== code start ========\r\n");  
