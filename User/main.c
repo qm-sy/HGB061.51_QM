@@ -63,6 +63,7 @@ void main()
     {
         on_off = power_on();
     }  
+    //IE2 |= 0x20; //´ò¿ªIE2-ET2£¬TIM3ÖÐ¶Ï
     P20 = 0; 
 
     led_init();    
@@ -94,3 +95,4 @@ void main()
         
     }
 }
+

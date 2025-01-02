@@ -65,21 +65,23 @@ void ET0ISR(void) interrupt 0
 
 void Tim0Isr(void) interrupt 1 
 {
-
     if( P16 == 0 )
     {
         pwm_num_cnt++;
         if(pwm_num_cnt==100)
         {
-            power_bit2 = 0; 
+            external_24bit = 0; 
+            previous_value = 0;
         }
     }
     if( P16 == 1 )
     {
         pwm_num_cnt = 0;
-        power_bit2 = 1;
-        buzzer = 1;
+        external_24bit = 1;
+        previous_value = 1;
+        
     }
+
 }
 
 void Tim1Isr(void) interrupt 3 
@@ -204,21 +206,24 @@ void Tim3Isr(void) interrupt 19
         }
     }
        
-    if(P07==0)
-    {
-        external_24bit = 1;   //24V接入
-        previous_value = 1;
-    }
-    if(P07==1)
-    {
-        external_24bit = 0;
-        previous_value = 0;
-    }
+//    if(P07==0)
+//    {
+//        external_24bit = 1;   //24V接入
+//        previous_value = 1;
+//    }
+//    if(P07==1)
+//    {
+//        external_24bit = 0;
+//        previous_value = 0;
+//    }
+//    
+    
+
 }
 
 void power_crl(uint8_t power_num)
 { 
-    if((power_bit==1)&&(power_bit2 == 1))
+    if(power_bit==1)
     {
         ET1 = 1;
     }
